@@ -38,6 +38,8 @@ type Shim struct {
 	Processor telegraf.StreamingProcessor
 	Output    telegraf.Output
 
+	UintSupport bool
+
 	log *Logger
 
 	// streams
@@ -102,7 +104,9 @@ func hasQuit(ctx context.Context) bool {
 }
 
 func (s *Shim) writeProcessedMetrics() error {
-	serializer := &influx.Serializer{}
+	serializer := &influx.Serializer{
+		UintSupport: s.UintSupport,
+	}
 	if err := serializer.Init(); err != nil {
 		return fmt.Errorf("creating serializer failed: %w", err)
 	}
